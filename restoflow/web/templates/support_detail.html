@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Обращение #{{ request_obj.id }} — RestoFlow{% endblock %}
+{% block content %}
+{% set sup_titles = {'open': 'Открыто', 'in_progress': 'В работе', 'closed': 'Закрыто'} %}
+<h1>Обращение #{{ request_obj.id }}</h1>
+<p class="muted">{{ request_obj.subject }} ·
+   <span class="status-pill sup-{{ request_obj.status }}">{{ sup_titles.get(request_obj.status) }}</span></p>
+{% if message %}<div class="flash">{{ message }}</div>{% endif %}
+<div class="thread">
+  {% for m in request_obj.messages %}
+  <div class="msg {{ 'msg-staff' if m.sender_type == 'staff' else 'msg-client' }}">
+    <b>{{ m.sender_name }}</b>
+    <p>{{ m.body }}</p>
+    <span class="muted">{{ m.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
+  </div>
+  {% endfor %}
+</div>
+{% if request_obj.status != 'closed' %}
+<form method="post" action="/support/{{ request_obj.id }}/message" class="feedback-form">
+  <label>Ваше сообщение<textarea name="body" rows="3" required></textarea></label>
+  <button class="btn" type="submit">Отправить</button>
+</form>
+<form method="post" action="/support/{{ request_obj.id }}/close" class="row-form">
+  <button class="btn secondary" type="submit">🔒 Закрыть обращение</button>
+</form>
+{% else %}
+<form method="post" action="/support/{{ request_obj.id }}/reopen" class="feedback-form">
+  <label>Причина возобновления<textarea name="body" rows="3" required></textarea></label>
+  <button class="btn" type="submit">Возобновить обращение</button>
+</form>
+{% endif %}
+<a class="btn secondary" href="/support">← Все обращения</a>
+{% endblock %}

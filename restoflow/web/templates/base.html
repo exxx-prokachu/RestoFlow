@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}RestoFlow Online{% endblock %}</title>
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body data-theme="{{ client.theme if client and client.theme else 'light' }}">
+<header class="topbar">
+  <a class="logo" href="/">☕ RestoFlow</a>
+  <nav>
+    <a href="/">Меню</a>
+    {% if client %}
+    <a href="/my-orders">Мои заказы</a>
+    <a href="/support">Поддержка</a>
+    <a href="/profile">Профиль</a>
+    <a class="bell" href="/notifications">🔔{% if unread %}<span class="bell-badge">{{ unread }}</span>{% endif %}</a>
+    <a href="/logout">Выйти</a>
+    {% else %}
+    <a href="/login">Вход</a>
+    <a href="/register">Регистрация</a>
+    {% endif %}
+    <a href="/reviews">Отзывы</a>
+  </nav>
+</header>
+<main class="container">{% block content %}{% endblock %}</main>
+<footer class="footer">RestoFlow Online · ИСУ кафе · 2026</footer>
+<script src="/static/js/cart.js"></script>
+<script src="/static/js/ui.js"></script>
+</body>
+</html>

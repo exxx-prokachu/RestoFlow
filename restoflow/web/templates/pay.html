@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Оплата заказа — RestoFlow{% endblock %}
+{% block content %}
+<div class="auth-box pay-box">
+  <h1>💳 Оплата заказа #{{ order.id }}</h1>
+  {% if message %}<div class="flash danger">{{ message }}</div>{% endif %}
+  <p class="muted">Сумма к оплате: <b class="price">{{ order.total_sum }} ₽</b></p>
+  {% if payable %}
+  <form method="post" action="/pay/{{ order.id }}" class="feedback-form">
+    <label>Номер карты<input name="card_number" placeholder="4111 1111 1111 1111" required></label>
+    <label>Срок (MM/YY)<input name="card_exp" placeholder="12/28" required></label>
+    <label>CVC<input name="cvc" placeholder="123" maxlength="3" required></label>
+    <button class="btn pay-btn" type="submit">Оплатить {{ order.total_sum }} ₽</button>
+  </form>
+  <p class="muted">Тестовый режим: карта 4111 1111 1111 1111, любой будущий срок, CVC 123.</p>
+  {% else %}
+  <p class="muted">Оплата пока недоступна (текущий статус заказа: {{ order.status }}).</p>
+  {% endif %}
+  <a class="btn secondary" href="/my-orders">← К моим заказам</a>
+</div>
+{% endblock %}

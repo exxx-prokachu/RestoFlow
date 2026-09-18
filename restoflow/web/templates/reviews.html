@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Отзывы — RestoFlow{% endblock %}
+{% block content %}
+<h1>⭐ Отзывы гостей</h1>
+{% if message %}<div class="flash">{{ message }}</div>{% endif %}
+<div class="reviews-layout">
+  <section class="review-stats">
+    <div class="kpi">
+      <div class="kpi-icon">⭐</div>
+      <div class="kpi-value">{{ stats.average }}</div>
+      <div class="muted">средняя оценка · {{ stats.count }} отзывов</div>
+    </div>
+        <div class="stars-bars">
+      {% for star in [5, 4, 3, 2, 1] %}
+      {% set cnt = stats.distribution.get(star, 0) %}
+      {% set pct = (cnt * 100 // stats.count) if stats.count else 0 %}
+      {% set width_class = 'w' ~ ((pct // 10) * 10) %}
+      <div class="star-row">
+        <span>{{ star }} ★</span>
+        <div class="bar"><div class="bar-fill {{ width_class }}"></div></div>
+        <span class="muted">{{ cnt }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  <section>
+    {% if client %}
+    <form method="post" action="/reviews/create" class="feedback-form review-form">
+      <label>Оценка
+        <select name="rating">
+          {% for r in [5, 4, 3, 2, 1] %}<option value="{{ r }}">{{ r }} ★</option>{% endfor %}
+        </select>
+      </label>
+      <label>Отзыв<textarea name="comment" rows="3"
+             placeholder="Поделитесь впечатлениями…"></textarea></label>
+      <label class="check-line"><input type="checkbox" name="is_anonymous"> Оставить анонимно</label>
+      <button class="btn" type="submit">Отправить отзыв</button>
+    </form>
+    {% else %}
+    <p class="muted"><a href="/login">Войдите</a>, чтобы оставить отзыв.</p>
+    {% endif %}
+  </section>
+</div>
+<h2>Все отзывы</h2>
+<div class="review-list">
+  {% for r in reviews %}
+  <div class="review-card">
+    <div class="review-head">
+      <b>{{ r.author }}</b>
+      <span class="stars">{{ '★' * r.rating }}{{ '☆' * (5 - r.rating) }}</span>
+      <span class="muted">{{ r.created_at.strftime('%d.%m.%Y') }}</span>
+    </div>
+    <p>{{ r.comment or '' }}</p>
+    {% if r.reply %}
+    <div class="review-reply"><b>Ответ кафе:</b> {{ r.reply }}</div>
+    {% endif %}
+  </div>
+  {% else %}
+  <p class="muted">Отзывов пока нет — будьте первым!</p>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+RestoFlow/
+├── restoflow/
+│   ├── database.py            # engine, SessionLocal, init_db (Этап 1)
+│   ├── models.py              # модели (Этап 1), дефолты статусов — .value
+│   ├── theme.py               # палитра, QSS, status_color (Этап 1)
+│   ├── events.py              # шина pub/sub + outbox
+│   ├── services/              # auth, menu, orders, billing, customers,
+│   │                          # feedback, notifications, reports, audit
+│   ├── api/                   # шлюз: main.py + routers/<service>.py
+│   ├── web/                   # BFF: main.py, templates/, static/
+│   └── desk/                  # PyQt6: main.py, views/, widgets/
+├── seeds/seed.py              # тестовые пользователи и демо-меню
+├── tests/
+├── requirements.txt           # SQLAlchemy>=2.0, PyQt6, FastAPI, uvicorn, Jinja2
+└── README.md
+
+
+Remove-Item cafe.db -Force        # пересоздать БД с паролями клиентов
+python seeds/seed.py
+python -m restoflow.api.main      # терминал 1
+python -m restoflow.web.main      # терминал 2
+python -m restoflow.desk.main     # терминал 3

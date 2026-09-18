@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Профиль — RestoFlow{% endblock %}
+{% block content %}
+{% set mail_checked = 'checked' if client.email_notifications else '' %}
+<h1>👤 Профиль клиента</h1>
+{% if message %}<div class="flash">{{ message }}</div>{% endif %}
+<div class="profile-grid">
+  <div class="profile-card">
+    <h2>Личные данные</h2>
+    <form method="post" action="/profile/update" class="feedback-form">
+      <label>ФИО<input name="full_name" value="{{ client.full_name }}" required></label>
+      <label>Телефон<input name="phone" value="{{ client.phone }}" required></label>
+      <label>Email для уведомлений<input name="email" type="email"
+             value="{{ client.email or '' }}" placeholder="name@mail.ru"></label>
+      <label class="check-line"><input type="checkbox" name="email_notifications" {{ mail_checked }}> Дублировать уведомления заказов на email</label>
+      <button class="btn" type="submit">Сохранить</button>
+    </form>
+  </div>
+  <div class="profile-card">
+    <h2>🔑 Смена пароля</h2>
+    <form method="post" action="/profile/password" class="feedback-form">
+      <label>Текущий пароль<input type="password" name="current" required></label>
+      <label>Новый пароль<input type="password" name="new" required minlength="6"></label>
+      <label>Повторите новый<input type="password" name="confirm" required></label>
+      <button class="btn" type="submit">Сменить пароль</button>
+    </form>
+    <p class="muted">Минимум 6 символов, буквы + цифры.</p>
+  </div>
+  <div class="profile-card">
+    <h2>🎨 Тема интерфейса</h2>
+        <form method="post" action="/profile/theme" class="theme-options">
+      {% for t, label in [('light','☀️ Светлая'), ('dark','🌙 Тёмная'), ('coffee','☕ Кофейная')] %}
+      {% set is_checked = 'checked' if client.theme == t else '' %}
+      <label><input type="radio" name="theme" value="{{ t }}" {{ is_checked }} hidden><span>{{ label }}</span></label>
+      {% endfor %}
+      <button class="btn" type="submit">Применить</button>
+    </form>
+  </div>
+  <div class="profile-card">
+    <h2>🔔 Уведомления и лояльность</h2>
+    <p>Непрочитанных: <b>{{ unread }}</b></p>
+    <a class="btn" href="/notifications">Центр уведомлений</a>
+    <p class="muted">Баллы: {{ client.loyalty_points }} ·
+       Визитов: {{ client.visits_count }} ·
+       Потрачено: {{ client.total_spent }} ₽</p>
+  </div>
+</div>
+{% endblock %}

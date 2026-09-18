@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Поддержка — RestoFlow{% endblock %}
+{% block content %}
+{% set sup_titles = {'open': 'Открыто', 'in_progress': 'В работе', 'closed': 'Закрыто'} %}
+<h1>🛟 Поддержка</h1>
+{% if message %}<div class="flash">{{ message }}</div>{% endif %}
+<div class="support-layout">
+  <section>
+    <h2>Новое обращение</h2>
+    <form method="post" action="/support/create" class="feedback-form">
+      <label>Тема<input name="subject" required minlength="5"
+             placeholder="Коротко о проблеме"></label>
+      <label>Сообщение<textarea name="body" rows="4" required
+             placeholder="Опишите ситуацию…"></textarea></label>
+      <button class="btn" type="submit">Отправить</button>
+    </form>
+  </section>
+  <section>
+    <h2>Мои обращения</h2>
+    <div class="order-list">
+      {% for r in requests %}
+      <a class="order-row" href="/support/{{ r.id }}">
+        <span>#{{ r.id }} · {{ r.subject }}</span>
+        <span class="status-pill sup-{{ r.status }}">{{ sup_titles.get(r.status, r.status) }}</span>
+        <span class="muted">{{ r.updated_at.strftime('%d.%m %H:%M') }}</span>
+      </a>
+      {% else %}<p class="muted">Обращений пока нет.</p>{% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

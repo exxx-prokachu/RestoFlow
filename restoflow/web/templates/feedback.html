@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Обратная связь — RestoFlow{% endblock %}
+{% block content %}
+<h1>⭐ Обратная связь</h1>
+{% if message %}<div class="flash">{{ message }}</div>{% endif %}
+<div class="feedback-stats">
+  <div class="kpi">
+    <div class="kpi-icon">⭐</div>
+    <div class="kpi-value">{{ stats.average }}</div>
+    <div class="muted">средняя оценка</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-icon">💬</div>
+    <div class="kpi-value">{{ stats.count }}</div>
+    <div class="muted">всего отзывов</div>
+  </div>
+</div>
+<form method="post" class="feedback-form">
+  <label>Оценка
+    <select name="rating">
+      {% for r in [5, 4, 3, 2, 1] %}<option value="{{ r }}">{{ r }} ⭐</option>{% endfor %}
+    </select>
+  </label>
+  <label>Телефон (необязательно)<input name="phone" placeholder="+7 ..."></label>
+  <label>Комментарий<textarea name="comment" rows="4"
+         placeholder="Расскажите о впечатлениях…"></textarea></label>
+  <button class="btn" type="submit">Отправить</button>
+</form>
+{% endblock %}

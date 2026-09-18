@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Уведомления — RestoFlow{% endblock %}
+{% block content %}
+<h1>🔔 Центр уведомлений</h1>
+{% if message %}<div class="flash">{{ message }}</div>{% endif %}
+<form method="post" action="/notifications/read-all" class="row-form">
+  <button class="btn secondary" type="submit">Отметить все прочитанными</button>
+</form>
+<div>
+{% for n in items %}
+  <div class="notif-item {{ '' if n.is_read else 'unread' }}">
+    <div>
+      <b>{{ n.title }}</b>
+      <p class="muted">{{ n.message or '' }}</p>
+      <span class="muted">{{ n.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
+    </div>
+    {% if not n.is_read %}
+    <form method="post" action="/notifications/{{ n.id }}/read">
+      <button class="btn" type="submit">Прочитано</button>
+    </form>
+    {% endif %}
+  </div>
+{% else %}
+<p class="muted">Уведомлений пока нет.</p>
+{% endfor %}
+</div>
+{% endblock %}

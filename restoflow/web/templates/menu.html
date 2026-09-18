@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Меню — RestoFlow{% endblock %}
+{% block content %}
+<div class="hero">
+  <h1>Добро пожаловать в <span>RestoFlow</span></h1>
+  <p class="muted">Свежее меню, быстрый заказ, тёплая атмосфера</p>
+  <form class="search-form" method="get" action="/">
+    <input name="search" value="{{ search }}" placeholder="Поиск блюд…">
+    <button class="btn" type="submit">Найти</button>
+  </form>
+</div>
+{% if client and active_orders %}
+<section class="track-panel">
+  <h2>📦 Мои заказы</h2>
+  <div class="track-row">
+    {% for o in active_orders %}
+    <div class="track-card status-glow-{{ o.status }}">
+      <b>#{{ o.id }}</b>
+      <span class="status-pill status-{{ o.status }}">{{ {'new': 'Принят', 'cooking': 'Готовится', 'ready': 'Готов к выдаче', 'served': 'Подан'}.get(o.status) }}</span>
+      <span class="muted">{{ o.total }} ₽</span>
+      {% if o.payable %}<a class="btn pay-btn" href="/pay/{{ o.id }}">💳 Оплатить</a>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+{% if not client %}
+<section class="track-panel">
+  <h2>🔎 Отследить заказ</h2>
+  <form method="get" action="/" class="row-form">
+    <input type="number" name="track_id" placeholder="Номер заказа" required>
+    <input name="track_phone" placeholder="Телефон" required>
+    <button class="btn" type="submit">Показать статус</button>
+  </form>
+  {% if track_id and tracked %}
+  <div class="track-card status-glow-{{ tracked.status }}">
+    <b>#{{ tracked.id }}</b>
+    <span class="status-pill status-{{ tracked.status }}">{{ {'new': 'Принят', 'cooking': 'Готовится', 'ready': 'Готов к выдаче', 'served': 'Подан', 'paid': 'Оплачен', 'cancelled': 'Отменён'}.get(tracked.status) }}</span>
+    <span class="muted">{{ tracked.total_sum }} ₽</span>
+  </div>
+  {% elif track_id %}
+  <p class="muted">Заказ с таким номером и телефоном не найден.</p>
+  {% endif %}
+</section>
+{% endif %}
+<div class="menu-layout">
+  <section>
+    <div class="chips">
+      <a class="chip {{ 'active' if not active_category }}" href="/">Все</a>
+      {% for c in categories %}
+      <a class="chip {{ 'active' if active_category == c.id }}"
+         href="/?category_id={{ c.id }}">{{ c.icon }} {{ c.name }}</a>
+      {% endfor %}
+    </div>
+    <div class="dish-grid">
+      {% for d in dishes %}
+      <div class="dish-card">
+        <div class="dish-emoji">{{ cat_icons.get(d.category_id, "🍽️") }}</div>
+        <div class="dish-head"><h3>{{ d.name }}</h3>
+          <span class="price">{{ d.price }} ₽</span></div>
+        <p class="muted">{{ d.description or '' }}</p>
+        <div class="dish-foot">
+          <span class="muted">{{ d.weight or '' }}</span>
+          <button class="btn add-btn" data-id="{{ d.id }}"
+                  data-name="{{ d.name }}" data-price="{{ d.price }}">В корзину</button>
+        </div>
+      </div>
+      {% else %}<p class="muted">Ничего не найдено.</p>{% endfor %}
+    </div>
+  </section>
+  <aside class="cart-panel">
+    <h2>🛒 Корзина</h2>
+    <div id="cart-items" class="cart-items"></div>
+    <div class="cart-total">Итого: <b id="cart-total">0 ₽</b></div>
+    {% if client %}
+    <form method="post" action="/order/create">
+      <input type="hidden" name="items_json" id="items-json" value="[]">
+      <label>Тип заказа
+        <select name="order_type" id="order-type">
+          <option value="takeaway">Самовывоз</option>
+          <option value="dine_in">В зале</option>
+          <option value="delivery">Доставка</option>
+        </select>
+      </label>
+      <label id="table-label" hidden>Номер стола
+        <input type="number" name="table_number" min="1"></label>
+      <label id="address-label" hidden>Адрес доставки
+        <input name="address" placeholder="Улица, дом, квартира"></label>
+      <label>Комментарий<textarea name="comment" rows="2"
+             placeholder="Без лука, дополнительный соус…"></textarea></label>
+      <button class="btn" type="submit" id="checkout-btn" disabled>Оформить заказ</button>
+    </form>
+    <p class="muted">Заказ оформляется на {{ client.full_name }} ({{ client.phone }})</p>
+    {% else %}
+    <p class="muted"><a href="/login">Войдите</a> или
+       <a href="/register">зарегистрируйтесь</a> по телефону, чтобы оформить заказ.</p>
+    {% endif %}
+  </aside>
+</div>
+{% endblock %}

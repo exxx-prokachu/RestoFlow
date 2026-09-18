@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Регистрация — RestoFlow{% endblock %}
+{% block content %}
+<div class="auth-box">
+  <h1>Регистрация</h1>
+  {% if message %}<div class="flash danger">{{ message }}</div>{% endif %}
+  <form method="post" class="feedback-form">
+    <label>Ваше имя<input name="full_name" required></label>
+    <label>Телефон<input name="phone" required placeholder="+7 900 000-00-00"></label>
+    <label>Пароль<input type="password" name="password" required minlength="4"></label>
+    <button class="btn" type="submit">Создать аккаунт</button>
+  </form>
+  <p class="muted">Уже есть аккаунт? <a href="/login">Войти</a></p>
+</div>
+{% endblock %}

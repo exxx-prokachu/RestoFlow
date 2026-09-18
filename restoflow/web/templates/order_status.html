@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Заказ #{{ order.id }} — RestoFlow{% endblock %}
+{% block content %}
+<div class="status-page">
+  {% if message %}<div class="flash">{{ message }}</div>{% endif %}
+  <h1>Заказ #{{ order.id }}</h1>
+  <p class="muted">Итого: <b>{{ order.total_sum }} ₽</b> ·
+     {{ order.created_at.strftime('%d.%m.%Y %H:%M') }}
+     {% if order.table_number %} · стол {{ order.table_number }}{% endif %}
+     {% if order.address %} · 🚚 {{ order.address }}{% endif %}</p>
+  <ol class="timeline">
+    {% for step in steps %}
+    <li class="{{ step.state }} delay-{{ loop.index0 }}">{{ step.title }}</li>
+    {% endfor %}
+  </ol>
+  <h2>Состав заказа</h2>
+  <ul class="order-items">
+    {% for item in items %}
+    <li><b>{{ item.dish.name }}</b> — {{ item.qty }} × {{ item.price }} ₽
+        = {{ item.qty * item.price }} ₽</li>
+    {% endfor %}
+  </ul>
+  {% if order.comment %}<p class="muted">💬 {{ order.comment }}</p>{% endif %}
+  {% if order.status in ['ready', 'served'] %}
+<div class="pay-banner">
+  <span>💳 Заказ ожидает оплаты — оплатите онлайн.</span>
+  <a class="btn pay-btn" href="/pay/{{ order.id }}">Перейти к оплате</a>
+</div>
+{% endif %}
+  <div class="actions">
+    <a class="btn" href="/my-orders">Мои заказы</a>
+    <a class="btn secondary" href="/">Новый заказ</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Мои заказы — RestoFlow{% endblock %}
+{% block content %}
+<h1>Мои заказы</h1>
+{% if message %}<div class="flash">{{ message }}</div>{% endif %}
+<p class="muted">Клиент: {{ client.full_name }} · {{ client.phone }}</p>
+<div class="order-list">
+  {% for o in orders %}
+  <a class="order-row" href="/order/{{ o.id }}">
+    <span>#{{ o.id }} · {{ o.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
+    <span class="status-pill status-{{ o.status }}">{{ titles.get(o.status, o.status) }}</span>
+    {% if o.status in ['ready', 'served'] %}
+    <span class="btn pay-btn" onclick="event.preventDefault(); location.href='/pay/{{ o.id }}'">💳 Оплатить</span>
+    {% endif %}
+    <b>{{ o.total_sum }} ₽</b>
+  </a>
+  {% else %}
+  <p class="muted">У вас пока нет заказов.</p>
+  {% endfor %}
+</div>
+{% endblock %}

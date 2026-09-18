@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Вход — RestoFlow{% endblock %}
+{% block content %}
+<div class="auth-box">
+  <h1>Вход</h1>
+  {% if message %}<div class="flash danger">{{ message }}</div>{% endif %}
+  <form method="post" class="feedback-form">
+    <label>Телефон<input name="phone" required placeholder="+7 900 000-00-00"></label>
+    <label>Пароль<input type="password" name="password" required></label>
+    <button class="btn" type="submit">Войти</button>
+  </form>
+  <p class="muted">Нет аккаунта? <a href="/register">Регистрация</a></p>
+</div>
+{% endblock %}
